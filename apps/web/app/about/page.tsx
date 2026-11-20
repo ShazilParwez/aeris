@@ -75,20 +75,20 @@ export default function AboutPage() {
         <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
           <p>
             AERIS features a self-contained Python ML module in <code className="font-mono bg-[#070C14] px-1.5 py-0.5 rounded text-white border border-[#1B2B3E]">aeris/ml/</code>.
-            Rather than relying on dummy generators or unverified APIs, AERIS trains a real <span className="font-bold text-white">RandomForestRegressor</span> on 1,080 continuous hours
-            of verified Delhi winter atmospheric data (November 1 – December 15, 2024) retrieved from Open-Meteo's CAMS European reanalysis archive.
+            Rather than relying on dummy generators or unverified APIs, AERIS trains a robust <span className="font-bold text-white">HuberRegressor Pipeline</span> on 1,053 continuous hours
+            of verified Delhi winter atmospheric data (November 1 – December 15, 2024) retrieved from Open-Meteo's CAMS European atmospheric reanalysis archive.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="rounded-xl border border-[#1B2B3E] bg-[#070C14] p-3.5 space-y-1">
-              <span className="font-bold text-white">Strict Chronological Holdout:</span>
+              <span className="font-bold text-white">Chronological 3-Way Split with Embargo:</span>
               <p className="text-slate-400">
-                Data was split chronologically (842 train hours, 211 test hours) without random shuffling to prevent future time-series leakage.
+                Data was partitioned chronologically (737 train hours, 158 validation hours, 153 test hours) with a 3-hour embargo gap to eliminate target leakage.
               </p>
             </div>
             <div className="rounded-xl border border-[#1B2B3E] bg-[#070C14] p-3.5 space-y-1">
-              <span className="font-bold text-white">Persistence Benchmark:</span>
+              <span className="font-bold text-white">Holdout Benchmark & Calibration:</span>
               <p className="text-slate-400">
-                The model achieved MAE of 12.40 µg/m³ and R² of 0.7564, beating the persistence baseline (MAE 16.70 µg/m³, R² 0.5493) by 26%.
+                The model achieved MAE of 10.87 µg/m³ and R² of 0.6749, beating persistence (MAE 12.68 µg/m³, R² 0.5786, +0.0963 points) with an empirical prediction interval (nominal 90%; observed test coverage 96.7%).
               </p>
             </div>
           </div>

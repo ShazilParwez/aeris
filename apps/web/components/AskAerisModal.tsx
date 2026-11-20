@@ -34,6 +34,7 @@ export const AskAerisModal: React.FC<AskAerisModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<AssistantChatResponse | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
   const suggestedQuestions = [
@@ -52,6 +53,25 @@ export const AskAerisModal: React.FC<AskAerisModalProps> = ({
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
           onClose();
+        } else if (e.key === "Tab") {
+          if (!modalRef.current) return;
+          const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusable.length === 0) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              last.focus();
+              e.preventDefault();
+            }
+          } else {
+            if (document.activeElement === last) {
+              first.focus();
+              e.preventDefault();
+            }
+          }
         }
       };
       window.addEventListener("keydown", handleKeyDown);
@@ -100,7 +120,10 @@ export const AskAerisModal: React.FC<AskAerisModalProps> = ({
       aria-modal="true"
       aria-labelledby="assistant-title"
     >
-      <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl border border-[#1B2B3E] bg-[#0B1220] shadow-2xl">
+      <div
+        ref={modalRef}
+        className="relative flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl border border-[#1B2B3E] bg-[#0B1220] shadow-2xl"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#1B2B3E] px-5 py-4">
           <div className="flex items-center gap-2.5">

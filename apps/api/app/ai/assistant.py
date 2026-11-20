@@ -230,8 +230,9 @@ async def ask_aeris(req: AssistantChatRequest) -> AssistantChatResponse:
             confidence_level="High (Gemini Model-Grounded with Live Parameters)",
             disclaimer="Advisories are educational and behavioral risk estimates. Not medical diagnostic advice.",
         )
-    except Exception:
-        # Graceful fallback to deterministic rule engine if Gemini encounters error/rate limit
+    except Exception as exc:
+        # Graceful fallback to deterministic rule engine if Gemini encounters error/rate limit/timeout
+        print(f"[AERIS Assistant] Gemini API error ({type(exc).__name__}): {exc}. Falling back to deterministic expert rules.")
         fallback = _deterministic_rule_based_reply(req)
-        fallback.confidence_level = "High (Rule-based Fallback Active)"
+        fallback.confidence_level = "High (Deterministic Rule-Based Fallback Active)"
         return fallback

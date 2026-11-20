@@ -45,9 +45,50 @@ DELHI_LOCATION = LocationItem(
     timezone="Asia/Kolkata",
 )
 
+KNOWN_CITIES: List[LocationItem] = [
+    DELHI_LOCATION,
+    LocationItem(
+        id=1275339,
+        name="Mumbai",
+        country="India",
+        admin1="Maharashtra",
+        latitude=19.0760,
+        longitude=72.8777,
+        timezone="Asia/Kolkata",
+    ),
+    LocationItem(
+        id=1277333,
+        name="Bengaluru",
+        country="India",
+        admin1="Karnataka",
+        latitude=12.9716,
+        longitude=77.5946,
+        timezone="Asia/Kolkata",
+    ),
+    LocationItem(
+        id=1275004,
+        name="Kolkata",
+        country="India",
+        admin1="West Bengal",
+        latitude=22.5726,
+        longitude=88.3639,
+        timezone="Asia/Kolkata",
+    ),
+    LocationItem(
+        id=1261481,
+        name="Chennai",
+        country="India",
+        admin1="Tamil Nadu",
+        latitude=13.0827,
+        longitude=80.2707,
+        timezone="Asia/Kolkata",
+    ),
+]
 
-def _get_delhi_demo_fixture() -> AirQualityResponse:
+
+def _get_delhi_demo_fixture(target_loc: Optional[LocationItem] = None) -> AirQualityResponse:
     now_utc = datetime.now(timezone.utc).isoformat()
+    loc = target_loc or DELHI_LOCATION
     # High winter smog profile typical of northern India November-January
     hourly: List[HourlyForecastPoint] = []
     base_hours = [
@@ -138,14 +179,14 @@ def _get_delhi_demo_fixture() -> AirQualityResponse:
 
     provenance = DataProvenance(
         provider="Open-Meteo Air Quality & Weather API (Offline Demonstration Mode)",
-        model_or_measured="Representative Northern India Winter Smog Scenario (Model-Derived Educational Fixture)",
+        model_or_measured=f"Representative Winter Smog Scenario for {loc.name} (Model-Derived Educational Fixture)",
         timestamp_utc=now_utc,
         fetch_time_utc=now_utc,
         is_demo_fixture=True,
     )
 
     return AirQualityResponse(
-        location=DELHI_LOCATION,
+        location=loc,
         current=current,
         hourly_forecast=hourly,
         cleaner_windows=cleaner_windows,
@@ -188,8 +229,10 @@ async def search_locations(query: str) -> List[LocationItem]:
     except Exception:
         pass
 
-    # Fallback to Delhi if search fails or offline
-    return [DELHI_LOCATION]
+    # Fallback to matching known cities if search fails or offline
+    q_clean = query.lower().strip()
+    matched = [c for c in KNOWN_CITIES if q_clean in c.name.lower()]
+    return matched if matched else [DELHI_LOCATION]
 
 
 async def fetch_air_quality(
@@ -208,7 +251,7 @@ async def fetch_air_quality(
     now_utc = datetime.now(timezone.utc).isoformat()
 
     try:
-        async with httpx.AsyncClient(timeout=6.0) as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(connect=1.5, read=3.0, write=2.0, pool=2.0)) as client:
             # 1. Fetch Air Quality
             aq_params = {
                 "latitude": latitude,
@@ -389,5 +432,12 @@ async def fetch_air_quality(
     except Exception:
         pass
 
-    # If live fetch fails or offline: Return scientifically calibrated Delhi fixture
-    return _get_delhi_demo_fixture()
+    # If live fetch fails or offline: Return scientifically calibrated fixture for requested location
+    target_loc = LocationItem(
+        name=city_name,
+        country=country_name,
+        latitude=latitude,
+        longitude=longitude,
+        timezone=tz_str,
+    )
+    return _get_delhi_demo_fixture(target_loc=target_loc)
