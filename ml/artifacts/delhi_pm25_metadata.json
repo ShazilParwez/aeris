@@ -1,13 +1,14 @@
 {
-  "model_name": "Random_Forest",
+  "model_name": "Huber_Regressor",
   "target_variable": "target_pm2_5_lead3",
   "target_horizon_hours": 3,
   "dataset_source": "Open-Meteo Air Quality (CAMS/Copernicus Atmospheric Reanalysis) & Weather Archive for Delhi, India",
   "start_date": "2024-11-01 00:00:00",
   "end_date": "2024-12-15 23:00:00",
   "total_samples": 1053,
-  "train_samples": 842,
-  "test_samples": 211,
+  "train_samples": 737,
+  "val_samples": 157,
+  "test_samples": 153,
   "features_used": [
     "pm2_5_lag0",
     "pm2_5_lag1",
@@ -29,85 +30,95 @@
     "dayofweek"
   ],
   "evaluation_metrics": {
-    "mae": 12.4,
-    "rmse": 19.22,
-    "r2": 0.7564
+    "mae": 10.87,
+    "rmse": 16.57,
+    "r2": 0.6749
   },
   "baseline_metrics": {
-    "mae": 16.7,
-    "rmse": 26.13,
-    "r2": 0.5493
+    "mae": 12.68,
+    "rmse": 18.87,
+    "r2": 0.5786
   },
   "all_model_evaluations": {
-    "Random_Forest": {
-      "mae": 12.4,
-      "rmse": 19.22,
-      "r2": 0.7564
+    "Huber_Regressor": {
+      "val_mae": 13.53,
+      "test_metrics": {
+        "mae": 10.87,
+        "rmse": 16.57,
+        "r2": 0.6749
+      }
     },
     "Ridge_Regression": {
-      "mae": 13.08,
-      "rmse": 19.56,
-      "r2": 0.7475
+      "val_mae": 19.24,
+      "test_metrics": {
+        "mae": 14.3,
+        "rmse": 18.47,
+        "r2": 0.5964
+      }
+    },
+    "Random_Forest": {
+      "val_mae": 27.64,
+      "test_metrics": {
+        "mae": 23.08,
+        "rmse": 26.65,
+        "r2": 0.1594
+      }
     }
   },
   "feature_importances": [
     {
       "feature": "pm2_5_lag0",
-      "importance": 0.649,
+      "importance": 3.748,
       "description": "Current PM2.5 concentration at forecast origin time"
     },
     {
-      "feature": "hour_sin",
-      "importance": 0.1471,
-      "description": "Cyclical diurnal solar/traffic phase (sine component)"
+      "feature": "pm2_5_lag1",
+      "importance": 0.3925,
+      "description": "PM2.5 concentration 1 hour prior"
     },
     {
-      "feature": "hour_cos",
-      "importance": 0.1136,
-      "description": "Cyclical diurnal solar/traffic phase (cosine component)"
+      "feature": "pm2_5_roll_mean_6h",
+      "importance": 0.3052,
+      "description": "6-hour rolling average particulate trend"
     },
     {
       "feature": "pm2_5_roll_mean_24h",
-      "importance": 0.031,
+      "importance": 0.1935,
       "description": "24-hour background baseline pollution load"
     },
     {
-      "feature": "pm10_lag0",
-      "importance": 0.027,
-      "description": "Coarse particulate matter concentration"
-    },
-    {
-      "feature": "wind_lag0",
-      "importance": 0.0213,
-      "description": "Surface wind speed (atmospheric dispersion)"
-    },
-    {
-      "feature": "humidity_lag0",
-      "importance": 0.0086,
-      "description": "Relative humidity (secondary aerosol formation)"
-    },
-    {
-      "feature": "pm2_5_roll_std_6h",
-      "importance": 0.0068,
-      "description": "6-hour rolling particulate volatility"
+      "feature": "temp_lag0",
+      "importance": 0.1453,
+      "description": "Surface ambient temperature (inversion proxy)"
     },
     {
       "feature": "pm2_5_lag24",
-      "importance": 0.0065,
+      "importance": 0.1288,
       "description": "PM2.5 concentration 24 hours prior (diurnal cycle)"
     },
     {
-      "feature": "pm2_5_lag3",
-      "importance": 0.0043,
-      "description": "PM2.5 concentration 3 hours prior"
+      "feature": "pm2_5_lag12",
+      "importance": 0.0982,
+      "description": "PM2.5 concentration 12 hours prior"
+    },
+    {
+      "feature": "hour_cos",
+      "importance": 0.0609,
+      "description": "Cyclical diurnal solar/traffic phase (cosine component)"
     }
   ],
-  "residual_std": 19.15,
+  "interval_calibration": {
+    "method": "Empirical validation residual quantiles (Q05, Q95) with measured test coverage",
+    "q05_offset": -26.13,
+    "q95_offset": 30.01,
+    "measured_test_coverage_pct": 96.7,
+    "nominal_target_pct": 90.0
+  },
   "limitations": [
-    "Model is calibrated specifically on Delhi winter atmospheric stagnation regimes and cannot be generalized to coastal or maritime climates without retraining.",
+    "Model is calibrated specifically on Delhi winter continental stagnation regimes and cannot be generalized to coastal or maritime climates without retraining.",
     "Predictions reflect atmospheric reanalysis and numerical model outputs rather than direct continuous FEM/BAM ground monitor sensors.",
     "Extreme episodic stubble burning or sudden localized fireworks spikes outside historical training distributions may cause under-prediction.",
     "Forecast horizon is strictly 3 hours ahead (t+3). Extrapolations beyond this horizon require autoregressive compounding."
   ],
-  "created_at_utc": "2026-11-20T12:07:47.164881+00:00"
+  "created_at_utc": "2026-11-20T12:42:01.647137+00:00"
 }

@@ -11,12 +11,12 @@ class ChatMessage(BaseModel):
 
 class AssistantChatRequest(BaseModel):
     question: str = Field(..., min_length=2, max_length=1000)
-    history: List[ChatMessage] = Field(default_factory=list)
-    location_name: str = "Delhi"
-    current_aqi: Optional[float] = None
-    current_pm2_5: Optional[float] = None
-    weather_summary: Optional[str] = None
-    family_context: Optional[str] = None
+    history: List[ChatMessage] = Field(default_factory=list, max_length=20)
+    location_name: str = Field("Delhi", max_length=100)
+    current_aqi: Optional[float] = Field(None, ge=0.0, le=1000.0)
+    current_pm2_5: Optional[float] = Field(None, ge=0.0, le=1500.0)
+    weather_summary: Optional[str] = Field(None, max_length=250)
+    family_context: Optional[str] = Field(None, max_length=250)
 
 
 class AssistantChatResponse(BaseModel):

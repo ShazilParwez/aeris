@@ -34,6 +34,7 @@ export const AskAerisModal: React.FC<AskAerisModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<AssistantChatResponse | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
 
   const suggestedQuestions = [
     "Is it advisable for my child to play outdoors this afternoon?",
@@ -45,9 +46,23 @@ export const AskAerisModal: React.FC<AskAerisModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      previousActiveElement.current = document.activeElement as HTMLElement;
       setTimeout(() => inputRef.current?.focus(), 100);
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          onClose();
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+        if (previousActiveElement.current) {
+          previousActiveElement.current.focus();
+        }
+      };
     }
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   const handleSubmit = async (queryText?: string) => {
     const query = queryText || input;

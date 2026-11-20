@@ -138,7 +138,7 @@ def _get_delhi_demo_fixture() -> AirQualityResponse:
 
     provenance = DataProvenance(
         provider="Open-Meteo Air Quality & Weather API (Offline Demonstration Mode)",
-        model_or_measured="Calibrated Northern India Winter Smog Demonstration Fixture",
+        model_or_measured="Representative Northern India Winter Smog Scenario (Model-Derived Educational Fixture)",
         timestamp_utc=now_utc,
         fetch_time_utc=now_utc,
         is_demo_fixture=True,
@@ -200,7 +200,7 @@ async def fetch_air_quality(
     tz_str: str = "auto",
 ) -> AirQualityResponse:
     """Fetches real air quality & weather data from Open-Meteo or falls back gracefully."""
-    cache_key = f"aq:{round(latitude, 4)}:{round(longitude, 4)}"
+    cache_key = f"aq:{round(latitude, 3)}:{round(longitude, 3)}"
     cached = _get_cache(cache_key)
     if cached:
         return cached

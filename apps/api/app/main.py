@@ -49,6 +49,16 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(api_v1_router, prefix=settings.API_V1_STR)
 
 
+@app.get("/health")
+async def root_health():
+    """Root health endpoint for container / load-balancer probes."""
+    return {
+        "status": "healthy",
+        "service": "AERIS Environmental Intelligence API",
+        "api_v1": f"{settings.API_V1_STR}/health",
+    }
+
+
 @app.get("/")
 async def root():
     return {

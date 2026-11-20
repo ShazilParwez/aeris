@@ -156,7 +156,7 @@ export default function ImpactPage() {
               <div className="flex items-center justify-between border-b border-[#1B2B3E] pb-3">
                 <div className="flex items-center gap-2 text-emerald-400">
                   <TrendingDown className="h-5 w-5" />
-                  <h3 className="text-sm font-bold uppercase tracking-wider">Dimension 1: Carbon Emissions</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-wider">Dimension 1: Direct Tailpipe Carbon Emissions</h3>
                 </div>
                 <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-bold text-emerald-300">
                   -{comparison.co2_reduction_pct}% CO2
@@ -189,23 +189,23 @@ export default function ImpactPage() {
               <div className="flex items-center justify-between border-b border-[#1B2B3E] pb-3">
                 <div className="flex items-center gap-2 text-[#E8AD4A]">
                   <Wind className="h-5 w-5" />
-                  <h3 className="text-sm font-bold uppercase tracking-wider">Dimension 2: Personal Inhaled Dose</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-wider">Dimension 2: Comparative Exposure Indicator</h3>
                 </div>
                 <span className="rounded-full bg-[#E8AD4A]/20 px-2.5 py-0.5 text-xs font-bold text-[#E8AD4A]">
-                  Exposure Index
+                  Screening Metric
                 </span>
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <span className="text-xs text-slate-400">Baseline Inhaled Dose Index</span>
+                  <span className="text-xs text-slate-400">Baseline Exposure Indicator</span>
                   <p className="text-xl font-extrabold text-slate-200">
                     {comparison.baseline.relative_exposure_index} pts ({comparison.baseline.estimated_duration_min} min)
                   </p>
                 </div>
 
                 <div>
-                  <span className="text-xs text-slate-400">Alternative Inhaled Dose Index</span>
+                  <span className="text-xs text-slate-400">Alternative Exposure Indicator</span>
                   <p className="text-2xl font-black text-[#75D9D0]">
                     {comparison.alternative.relative_exposure_index} pts ({comparison.alternative.estimated_duration_min} min)
                   </p>

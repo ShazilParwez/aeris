@@ -394,6 +394,40 @@ export default function DashboardPage() {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
+
+            {/* Accessible Tabular Forecast Alternative for Screen Readers */}
+            <div className="border-t border-[#1B2B3E] pt-3">
+              <details className="group">
+                <summary className="cursor-pointer text-xs font-semibold text-slate-400 hover:text-slate-200 focus:outline-none focus:underline">
+                  View accessible tabular forecast data ({horizonView} hours)
+                </summary>
+                <div className="mt-2.5 max-h-48 overflow-y-auto rounded-xl border border-[#1B2B3E] bg-[#070C14]">
+                  <table className="w-full text-left text-[11px] text-slate-300">
+                    <caption className="sr-only">Hourly Air Quality Forecast Table</caption>
+                    <thead className="sticky top-0 bg-[#0D1624] text-slate-400 border-b border-[#1B2B3E]">
+                      <tr>
+                        <th scope="col" className="px-3 py-1.5 font-semibold">Time</th>
+                        <th scope="col" className="px-3 py-1.5 font-semibold">AQI</th>
+                        <th scope="col" className="px-3 py-1.5 font-semibold">PM2.5 (µg/m³)</th>
+                        <th scope="col" className="px-3 py-1.5 font-semibold">PM10 (µg/m³)</th>
+                        <th scope="col" className="px-3 py-1.5 font-semibold">Health Category</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1B2B3E]">
+                      {formatChartData().map((row, idx) => (
+                        <tr key={idx} className="hover:bg-[#142336]/40">
+                          <td className="px-3 py-1 font-mono text-slate-200">{row.time}</td>
+                          <td className="px-3 py-1 font-semibold">{row.aqi}</td>
+                          <td className="px-3 py-1">{row.pm2_5}</td>
+                          <td className="px-3 py-1">{row.pm10}</td>
+                          <td className="px-3 py-1">{row.category}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            </div>
           </div>
 
           {/* Priority Action Cards (Deterministic Rule Engine Output) */}

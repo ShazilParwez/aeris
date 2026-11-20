@@ -85,18 +85,18 @@ def calculate_mode_impact(mode: TransportMode, distance_km: float, current_pm2_5
     )
 
     methodology = (
-        f"CO2 calculated at {factor} g/km. Exposure modeled using {exertion}x ventilation factor "
+        f"Direct tailpipe CO2 calculated at {factor} g/km. Comparative exposure indicator modeled using {exertion}x ventilation factor "
         f"and {micro_ratio}x cabin filtration coefficient relative to ambient PM2.5 ({current_pm2_5} µg/m³)."
     )
 
     if mode in (TransportMode.CYCLING, TransportMode.WALKING):
-        tradeoff = "Zero direct carbon emissions, but elevated respiratory particulate intake during smog events due to aerobic exertion."
+        tradeoff = "Zero direct tailpipe carbon emissions, but elevated concentration-time particulate exposure during smog events due to aerobic exertion."
     elif mode == TransportMode.METRO_TRAIN:
-        tradeoff = "Optimal dual benefit: high carbon reduction with enclosed, HVAC-filtered cabin minimizing particulate exposure."
+        tradeoff = "Optimal dual benefit: high direct carbon reduction with enclosed, HVAC-filtered cabin minimizing particulate exposure."
     elif mode == TransportMode.PRIVATE_CAR:
-        tradeoff = "Filtered in-cabin air if AC is on recirculation, but highest emissions per passenger-kilometer."
+        tradeoff = "Filtered in-cabin air if AC is on recirculation, but highest direct tailpipe emissions per passenger-kilometer."
     else:
-        tradeoff = "Intermediate emissions and exposure profile."
+        tradeoff = "Intermediate direct emissions and exposure profile."
 
     return TransportOptionImpact(
         mode=mode,
@@ -125,22 +125,22 @@ def compare_transport_impact(request: TransportComparisonRequest) -> TransportCo
     exp_diff = alternative.relative_exposure_index - baseline.relative_exposure_index
     if exp_diff > 15:
         exp_text = (
-            f"Attention: While {alternative.mode_label} saves {co2_saved} kg CO2, "
-            f"it increases your relative particulate lung exposure by +{round((alternative.relative_exposure_index / max(1.0, baseline.relative_exposure_index) - 1)*100)}% "
-            f"due to physical exertion and proximity to roadway traffic."
+            f"Attention: While {alternative.mode_label} saves {co2_saved} kg of direct tailpipe CO2, "
+            f"it increases your relative concentration-time particulate exposure indicator by +{round((alternative.relative_exposure_index / max(1.0, baseline.relative_exposure_index) - 1)*100)}% "
+            f"due to aerobic physical exertion and proximity to roadway vehicular exhaust."
         )
         reconcile = (
-            "During severe smog, prefer Electric Metro or wear an airtight N95/FFP2 respirator "
-            "if choosing active cycling/walking."
+            "During severe winter smog, prefer Electric Metro or wear an airtight N95/FFP2 respirator "
+            "if choosing active cycling or walking."
         )
     elif exp_diff < -10:
         exp_text = (
-            f"Win-Win: {alternative.mode_label} saves {co2_saved} kg CO2 AND decreases your particulate exposure "
+            f"Win-Win: {alternative.mode_label} saves {co2_saved} kg of direct tailpipe CO2 AND decreases your particulate exposure indicator "
             f"by {round(abs(exp_diff), 1)} index points due to sealed, filtered cabin air."
         )
-        reconcile = "Highly recommended: achieves both decarbonization and personal respiratory protection."
+        reconcile = "Highly recommended: achieves both transport decarbonization and personal respiratory risk mitigation."
     else:
-        exp_text = f"{alternative.mode_label} offers comparable exposure while cutting CO2 by {co2_pct}%."
+        exp_text = f"{alternative.mode_label} offers comparable exposure while cutting direct tailpipe CO2 by {co2_pct}%."
         reconcile = "A sustainable alternative that maintains manageable personal exposure."
 
     assumptions = [

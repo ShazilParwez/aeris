@@ -1,7 +1,9 @@
 """AERIS API v1 Endpoints Router."""
 
-from typing import List, Optional
-from fastapi import APIRouter, Query, HTTPException, Depends
+import time
+from typing import List, Optional, Dict
+from collections import defaultdict
+from fastapi import APIRouter, Query, HTTPException, Depends, Request
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -21,6 +23,25 @@ from app.ai.assistant import ask_aeris
 from ml.model_registry import registry
 
 router = APIRouter()
+
+# Rate limiter: IP -> list of request timestamps within the last 60 seconds
+_RATE_LIMITS: Dict[str, List[float]] = defaultdict(list)
+MAX_REQUESTS_PER_MINUTE = 30
+
+
+def check_rate_limit(request: Request):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    now = time.time()
+    cutoff = now - 60.0
+    # Clean timestamps older than 60s
+    timestamps = [t for t in _RATE_LIMITS[client_ip] if t > cutoff]
+    if len(timestamps) >= MAX_REQUESTS_PER_MINUTE:
+        raise HTTPException(
+            status_code=429,
+            detail="Rate limit exceeded: maximum 30 requests per minute allowed on this endpoint.",
+        )
+    timestamps.append(now)
+    _RATE_LIMITS[client_ip] = timestamps
 
 
 class HealthResponse(BaseModel):
@@ -84,7 +105,7 @@ async def compare_transport(req: TransportComparisonRequest):
     return compare_transport_impact(req)
 
 
-@router.post("/assistant/chat", response_model=AssistantChatResponse)
+@router.post("/assistant/chat", response_model=AssistantChatResponse, dependencies=[Depends(check_rate_limit)])
 async def chat_assistant(req: AssistantChatRequest):
     return await ask_aeris(req)
 
@@ -94,7 +115,7 @@ async def ml_status():
     return registry.get_status()
 
 
-@router.post("/ml/predict", response_model=MLPredictionResponse)
+@router.post("/ml/predict", response_model=MLPredictionResponse, dependencies=[Depends(check_rate_limit)])
 async def ml_predict(req: MLPredictionRequest):
     return registry.predict_3h(
         city=req.city,
