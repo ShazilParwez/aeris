@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #070C14;
+  --foreground: #F7F9F6;
+  --card-bg: #0D1624;
+  --card-border: #1B2B3E;
+  --card-hover: #132034;
+  --teal-primary: #149A86;
+  --teal-light: #75D9D0;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Accessible visible focus indicators */
+*:focus-visible {
+  outline: 2px solid var(--teal-light);
+  outline-offset: 2px;
+}
+
+/* Custom smooth dark scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B1220;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1D324D;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #149A86;
+}
+
+@layer utilities {
+  .bg-card-aeris {
+    background-color: #0D1624;
+    border: 1px solid #1B2B3E;
+  }
+  .bg-card-subtle {
+    background-color: #121D2F;
+    border: 1px solid #20334A;
+  }
+}
