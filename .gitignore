@@ -27,6 +27,11 @@ htmlcov/
 .env.test.local
 .env.production.local
 
+# Test outputs & Playwright
+test-results/
+playwright-report/
+blob-report/
+
 # OS
 .DS_Store
 Thumbs.db
