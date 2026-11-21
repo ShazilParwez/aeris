@@ -17,6 +17,7 @@ class AssistantChatRequest(BaseModel):
     current_pm2_5: Optional[float] = Field(None, ge=0.0, le=1500.0)
     weather_summary: Optional[str] = Field(None, max_length=250)
     family_context: Optional[str] = Field(None, max_length=250)
+    data_source: Optional[str] = Field(None, max_length=150)
 
 
 class AssistantChatResponse(BaseModel):

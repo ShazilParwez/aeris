@@ -15,10 +15,17 @@ def _deterministic_rule_based_reply(req: AssistantChatRequest) -> AssistantChatR
     aqi_str = f"AQI {round(req.current_aqi)}" if req.current_aqi else "current air quality"
     pm25_str = f"{round(req.current_pm2_5, 1)} µg/m³ PM2.5" if req.current_pm2_5 else "elevated particulates"
 
+    if req.data_source:
+        source_label = req.data_source
+    elif req.current_aqi is not None or req.current_pm2_5 is not None:
+        source_label = "User-Supplied Environmental Readings"
+    else:
+        source_label = "Open-Meteo Atmospheric Forecast System"
+
     facts = [
         f"Location: {req.location_name}",
         f"Current condition: {aqi_str} ({pm25_str})",
-        "Source: Open-Meteo Atmospheric Forecast System",
+        f"Source: {source_label}",
     ]
 
     actions = []
@@ -188,13 +195,21 @@ async def ask_aeris(req: AssistantChatRequest) -> AssistantChatResponse:
             "5. Include 2-3 specific suggested action bullets and 2-3 follow-up question ideas."
         )
 
+        if req.data_source:
+            source_label = req.data_source
+        elif req.current_aqi is not None or req.current_pm2_5 is not None:
+            source_label = "User-Supplied Environmental Readings"
+        else:
+            source_label = "Open-Meteo Atmospheric Forecast System"
+
         context_prompt = (
             f"VERIFIED ENVIRONMENTAL CONTEXT:\n"
             f"- City: {req.location_name}\n"
             f"- Current AQI: {req.current_aqi or 'N/A'}\n"
             f"- Current PM2.5: {req.current_pm2_5 or 'N/A'} µg/m³\n"
             f"- Weather: {req.weather_summary or 'Winter atmospheric conditions'}\n"
-            f"- Family Context: {req.family_context or 'General household'}\n\n"
+            f"- Family Context: {req.family_context or 'General household'}\n"
+            f"- Environmental Data Source: {source_label}\n\n"
             f"USER QUESTION: {req.question}"
         )
 
@@ -213,6 +228,7 @@ async def ask_aeris(req: AssistantChatRequest) -> AssistantChatResponse:
             f"Location: {req.location_name}",
             f"Verified AQI: {req.current_aqi or 'Available in dashboard'}",
             f"Model: {settings.GEMINI_MODEL} with grounded environmental context",
+            f"Source: {source_label}",
         ]
 
         return AssistantChatResponse(

@@ -1,12 +1,20 @@
 """AERIS Core Configuration Module."""
 
 import os
+from pathlib import Path
 from typing import List
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-# Load local environment if available
+# Load local environment if available (current working directory, apps/api/.env, and repo root)
 load_dotenv()
+_config_path = Path(__file__).resolve()
+_apps_api_env = _config_path.parents[2] / ".env"
+if _apps_api_env.exists():
+    load_dotenv(_apps_api_env)
+_repo_env = _config_path.parents[3] / ".env"
+if _repo_env.exists():
+    load_dotenv(_repo_env)
 
 
 class Settings(BaseModel):
